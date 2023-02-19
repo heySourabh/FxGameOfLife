@@ -6,3 +6,4 @@ The framerate and the scale can be controlled by changing the variables in the c
 
 ![Screncapture of the program](gol.gif)
 
+@author Sourabh Bhat <https://spbhat.in>

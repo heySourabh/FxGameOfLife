@@ -13,7 +13,7 @@ import javafx.stage.Stage;
 
 /**
  *
- * @author Sourabh Bhat <spbhat.in>
+ * @author Sourabh Bhat <https://spbhat.in>
  */
 public class FxGameOfLife extends Application {
 
