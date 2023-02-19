@@ -26,6 +26,8 @@ public class FxGameOfLife extends Application {
     private static final double SCALE = 5;
     private static final int FPS = 10;
     private static final double LIFE_PROBABILITY = 0.1;
+    private static final Color BACKGROUND_COLOR = Color.WHITE;
+    private static final Color CELL_COLOR = Color.BLACK;
     private static GraphicsContext gc;
 
     private static int[][] newState = new int[WIDTH][HEIGHT];
@@ -63,9 +65,11 @@ public class FxGameOfLife extends Application {
         gc.save();
         gc.translate(WIDTH * (1 - SCALE) / 2, HEIGHT * (1 - SCALE) / 2);
         gc.scale(SCALE, SCALE);
-        gc.setFill(Color.WHITE);
+        gc.setFill(BACKGROUND_COLOR);
         gc.fillRect(0, 0, WIDTH, HEIGHT);
-        gc.setFill(Color.BLACK);
+        gc.setFill(CELL_COLOR);
+        gc.setStroke(BACKGROUND_COLOR);
+        gc.setLineWidth(0.15);
         for (int x = 0; x < WIDTH; x++) {
             for (int y = 0; y < HEIGHT; y++) {
                 if (currentState[x][y] == 1) {
@@ -73,8 +77,12 @@ public class FxGameOfLife extends Application {
                 }
             }
         }
-        // gc.setFill(Color.RED);
-        // gc.fillRect(WIDTH / 2 - 20, HEIGHT / 2 - 20, 40, 40);
+        for (int x = 0; x <= WIDTH; x++) {
+            gc.strokeLine(x, 0, x, HEIGHT);
+        }
+        for (int y = 0; y <= HEIGHT; y++) {
+            gc.strokeLine(0, y, WIDTH, y);
+        }
         gc.restore();
     }
 
