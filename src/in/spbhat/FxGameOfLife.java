@@ -3,12 +3,14 @@ package in.spbhat;
 import java.util.Random;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
+import javafx.geometry.Point2D;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
+import javafx.scene.transform.Affine;
 import javafx.stage.Stage;
 
 /**
@@ -33,19 +35,21 @@ public class FxGameOfLife extends Application {
     private static int[][] newState = new int[WIDTH][HEIGHT];
     private static int[][] currentState = new int[WIDTH][HEIGHT];
 
-    private Parent createContent() {
+    private static final Affine canvasTransform = new Affine();
+    private static final Affine mouseTransform = new Affine();
+
+    private Parent createContent() throws Exception {
         Canvas canvas = new Canvas(WIDTH, HEIGHT);
         gc = canvas.getGraphicsContext2D();
-        canvas.setOnMouseDragged((event) -> {
-            double x1 = (WIDTH - SCALE * WIDTH) / 2;
-            double x2 = (WIDTH + SCALE * WIDTH) / 2;
-            double y1 = (HEIGHT - SCALE * HEIGHT) / 2;
-            double y2 = (HEIGHT + SCALE * HEIGHT) / 2;
-            int x = (int) (WIDTH * (event.getX() - x1) / (x2 - x1));
-            int y = (int) (HEIGHT * (event.getY() - y1) / (y2 - y1));
+        canvasTransform.appendScale(SCALE, SCALE, new Point2D(WIDTH / 2, HEIGHT / 2));
+        mouseTransform.setToTransform(canvasTransform.createInverse());
+        canvas.setOnMouseDragged(event -> {
+            var cxy = mouseTransform.transform(new Point2D(event.getX(), event.getY()));
+            var cx = (int) cxy.getX();
+            var cy = (int) cxy.getY();
             for (int i = -1; i <= 1; i++) {
                 for (int j = -1; j <= 1; j++) {
-                    currentState[x + i][y + j] = 1;
+                    currentState[cx + i][cy + j] = 1;
                 }
             }
         });
@@ -62,9 +66,7 @@ public class FxGameOfLife extends Application {
     }
 
     private void drawCanvas() {
-        gc.save();
-        gc.translate(WIDTH * (1 - SCALE) / 2, HEIGHT * (1 - SCALE) / 2);
-        gc.scale(SCALE, SCALE);
+        gc.setTransform(canvasTransform);
         gc.setFill(BACKGROUND_COLOR);
         gc.fillRect(0, 0, WIDTH, HEIGHT);
         gc.setFill(CELL_COLOR);
@@ -83,7 +85,6 @@ public class FxGameOfLife extends Application {
         for (int y = 0; y <= HEIGHT; y++) {
             gc.strokeLine(0, y, WIDTH, y);
         }
-        gc.restore();
     }
 
     private boolean onEdge(int i, int j) {
